@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js'
 import townImage from "./images/Map & Terrain/ZeldaWorld.png"
-import playerImage from "./images/PlayerCharacters/Player.png"
 import npcImageHolbewoner from "./images/NonPlayerCharacters/Holbewoner.png"
 import npcImageBunny from "./images/NonPlayerCharacters/Bunny.png"
 import knuppelImage from "./images/PlayerCharacters/playerWeapons/WoodenClub.png"
@@ -22,7 +21,7 @@ export class Assets extends PIXI.Loader {
         //all the images and other files to be added to the loader, can be freely added to
         this.toLoad = [
             { name: 'townTexture', url: townImage },
-            { name: 'playerSprite', url: playerImage },
+            { name: 'playerSprite', url: "Character_Spritesheet.json" },
             { name: 'Holbewoner', url: npcImageHolbewoner },
             { name: 'Bunny', url: npcImageBunny },
             { name: 'woodclubTexture', url: knuppelImage },

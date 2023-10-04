@@ -42,11 +42,5 @@ export class Npc extends PIXI.Sprite {
 
 
     
-    // retrieves appropriate line of dialogue based on quest progression, then calls questTracker so it can progress the quest.
-    public dialogue() {
-        let status = this.game.questTracker.getQuestStatus(this.questName)
 
-        console.log(this.dialogueArray[status])// <== THIS SHOULD BE REPLACED WITH CREATING A VISIBLE TEXTBOX VIA CLASSES.
-        this.game.questTracker.questJunction(this.questName)
-    }
 }

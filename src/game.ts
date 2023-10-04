@@ -4,7 +4,7 @@ import { TownMap } from "./TownMap"
 import { Player} from "./Player"
 import { Npc } from "./Npc"
 import { UPDATE_PRIORITY } from 'pixi.js'
-import { QuestTracker } from './QuestTracker'
+
 
 /* 
 ** alle afbeelding worden nu geladen in assets.ts. assets.ts is extended als pixi.assets.
@@ -16,11 +16,12 @@ import { QuestTracker } from './QuestTracker'
 export class Game{
     public pixi : PIXI.Application //canvas element in de html file
     public assets = new Assets(this)
-    public questTracker : QuestTracker
+
     private player : Player
     private npcsToLoad : string[] = []
     public npcs: Npc[] = []
     public townMap : TownMap
+   
 
     constructor(){
         console.log("ik ben een game")
@@ -34,15 +35,16 @@ export class Game{
 
     public loadCompleted() {
         //creates quest tracker object
-        this.questTracker = new QuestTracker(this, this.assets.questsJson)
+       
 
         //creates background image
         this.townMap = new TownMap(this.assets.resources["townTexture"].texture!)
         this.pixi.stage.addChild(this.townMap)
 
         //creates player character
-        this.player = new Player(this, this.townMap, this.assets.resources["playerSprite"].texture!, this.assets.resources['woodclubTexture'].texture!)
-        this.pixi.stage.addChild(this.player)
+        let frames = this.PlayerIdleAnimation()
+        this.player = new Player(this, this.townMap, frames, this.assets.resources['woodclubTexture'].texture!)
+        
 
         //creates npc
         this.npcsToLoad.push("Holbewoner", "Bunny")
@@ -56,36 +58,64 @@ export class Game{
         }
 
         //updater
-        this.pixi.ticker.add((delta) => this.update(delta));
+        this.pixi.ticker.add((delta:number) => this.update(delta));
     }
 
     public update(delta: number){
         this.player.update(delta)
-    
-        for(let npc of this.npcs){
-            if(this.collision(this.player, npc)){
-                npc.setInRange(true)
-                console.log(npc.getInRange())
-                window.location.href="minigame.html";
-                //console.log("player touches enemy 💀")
-            } else { 
-                npc.setInRange(false)
-            }
-        }
+        this.player.x += this.player.xspeed
+        this.player.y += this.player.yspeed
+
         
+        let mapx = this.player.clamp(this.player.x, this.player.centerx, this.player.mapwidth - this.player.centerx)
+        let mapy = this.player.clamp(this.player.y, this.player.centery, this.player.mapheight - this.player.centery)
+        this.pixi.stage.pivot.set(mapx, mapy) 
+
+    
+
+
+    }
+    
+    public PlayerIdleAnimation(): PIXI.Texture[] {
+       let frames: PIXI.Texture[] = []
+       
+       for (let i = 1; i < 6; i++) {
+        frames.push(PIXI.Texture.from(`Character_Idle${i}.png`));
+    }
+       return frames
+
     }
 
-    private collision(sprite1:PIXI.Sprite, sprite2:PIXI.Sprite) {
-        const bounds1 = sprite1.getBounds()
-        const bounds2 = sprite2.getBounds()
-
-        return bounds1.x < bounds2.x + bounds2.width
-            && bounds1.x + bounds1.width > bounds2.x
-            && bounds1.y < bounds2.y + bounds2.height
-            && bounds1.y + bounds1.height > bounds2.y;
+    public PlayerActionAnimation(animationRequest : String): PIXI.Texture[] {
+        let frames: PIXI.Texture[] = []
+        
+        if(animationRequest == "walk"){
+            for (let i = 1; i <= 4; i++) {
+            frames.push(PIXI.Texture.from(`Character_Walk${i}.png`));
+            }
+            return frames}
+        else if(animationRequest == "walkUp"){
+            for (let i = 1; i <= 2; i++) {
+            frames.push(PIXI.Texture.from(`Character_Walk_Up${i}.png`));
+            }
+            return frames
+            } 
+        else if(animationRequest == "walkDown"){
+            for (let i = 1; i <= 2; i++) {
+            frames.push(PIXI.Texture.from(`Character_Walk_Down${i}.png`));
+            }
+            return frames
+            }
+        else if(animationRequest =="interact"){
+            frames.push(PIXI.Texture.from(`Character_Interact.png`))
+            return frames
+            }
+        else
+        for (let i = 1; i < 6; i++) {
+            frames.push(PIXI.Texture.from(`Character_Idle${i}.png`));  
+            }
+            return frames 
     }
 
 
 }
-
-let g = new Game()
