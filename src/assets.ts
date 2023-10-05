@@ -47,7 +47,7 @@ export class Assets extends PIXI.Loader {
     }
 
     private fetchRequest(type: string) {
-        fetch(`../${type}.json`)
+        fetch(`${type}.json`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(response.statusText);
